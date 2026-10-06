@@ -14,19 +14,27 @@ export const LeaderboardPage: React.FC = () => {
   useEffect(() => {
     document.title = 'Leaderboard — HPE Beyond The Goal';
 
-    if (isSupabaseConfigured) {
-      setIsSyncing(true);
-      syncSessionHistory()
-        .then((synced) => {
-          if (synced && synced.length > 0) {
-            setSessionHistory(synced);
-          }
-        })
-        .catch((e) => {
-          console.warn('LeaderboardPage: Supabase sync error:', e);
-        })
-        .finally(() => setIsSyncing(false));
-    }
+    const loadData = () => {
+      if (isSupabaseConfigured) {
+        setIsSyncing(true);
+        syncSessionHistory()
+          .then((synced) => {
+            if (synced && synced.length > 0) {
+              setSessionHistory(synced);
+            }
+          })
+          .catch((e) => {
+            console.warn('LeaderboardPage: Supabase sync error:', e);
+          })
+          .finally(() => setIsSyncing(false));
+      }
+    };
+
+    loadData();
+
+    // Auto-refresh every 5 seconds so live game sessions on tablets/phones appear immediately
+    const interval = setInterval(loadData, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleClearHistory = () => {

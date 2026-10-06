@@ -1,8 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 import type { SessionRecord } from '../types/game';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabaseUrl =
+  import.meta.env.VITE_SUPABASE_URL || 'https://nkzrjkzuhpwadvsbfuea.supabase.co';
+const supabaseAnonKey =
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5renJqa3p1aHB3YWR2c2JmdWVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExNjM0NzMsImV4cCI6MjEwNjczOTQ3M30.Cxc_P92UNzhsH1BIxF9fZgoXV4pyNtvuna8Xp9Lde-Y';
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
