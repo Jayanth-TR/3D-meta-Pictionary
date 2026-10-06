@@ -197,14 +197,14 @@ export const GameSetup: React.FC<GameSetupProps> = ({
                 className="w-full px-4 py-3 rounded-xl bg-[#151821] border border-[#3E4550] text-white placeholder-[#7D8A92] focus:outline-none focus:ring-2 focus:ring-[#01A982] focus:border-[#01A982] text-sm sm:text-base font-semibold transition-all shadow-inner"
               />
 
-              {/* Scoring Info Note */}
+              {/* Speed & Ranking Info Note */}
               <div className="bg-[#151821]/90 border border-[#01A982]/30 rounded-xl p-3 flex items-center gap-3 shadow-xs">
                 <div className="p-1.5 rounded-lg bg-[#01A982]/20 text-[#00E0AF] flex-shrink-0">
                   <Zap className="w-4 h-4" />
                 </div>
                 <div className="text-xs leading-snug">
                   <span className="font-bold text-white block">Together, We Move Forward</span>
-                  <span className="text-[#B1B9BE]">Faster solve earns up to 1,000 pts per round</span>
+                  <span className="text-[#B1B9BE]">Faster solve ranks higher on the event leaderboard!</span>
                 </div>
               </div>
             </div>

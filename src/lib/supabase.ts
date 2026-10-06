@@ -17,7 +17,7 @@ export interface SupabaseSessionRow {
   id: string;
   team_name: string;
   player_name: string;
-  result: 'CORRECT' | 'TIMEOUT';
+  result: 'CORRECT' | 'TIMEOUT' | 'GAVE_UP';
   elapsed_seconds: number;
   attempts: number;
   score: number;
@@ -30,7 +30,7 @@ export const mapRowToSessionRecord = (row: SupabaseSessionRow): SessionRecord =>
   teamName: row.team_name,
   playerName: row.player_name,
   players: row.player_name ? row.player_name.split(',').map((s) => s.trim()).filter(Boolean) : [],
-  result: row.result,
+  result: (row.result === 'CORRECT' ? 'CORRECT' : row.result === 'GAVE_UP' ? 'GAVE_UP' : 'TIMEOUT') as 'CORRECT' | 'TIMEOUT' | 'GAVE_UP',
   elapsedSeconds: row.elapsed_seconds,
   attempts: row.attempts,
   score: row.score,

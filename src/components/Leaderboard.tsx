@@ -1,6 +1,6 @@
 import React from 'react';
 import type { SessionRecord } from '../types/game';
-import { CheckCircle2, TimerOff, Users, User, Zap } from 'lucide-react';
+import { CheckCircle2, Flag, Users, User, Clock } from 'lucide-react';
 
 interface LeaderboardProps {
   sessionHistory: SessionRecord[];
@@ -11,15 +11,17 @@ interface LeaderboardProps {
 }
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ sessionHistory }) => {
-  // Sorted history by score desc, then by solve speed asc
-  const sortedHistory = [...sessionHistory].sort(
-    (a, b) => b.score - a.score || a.elapsedSeconds - b.elapsedSeconds
-  );
+  // Sorted history: Solved rounds first (by fastest elapsed time), followed by gave up rounds
+  const sortedHistory = [...sessionHistory].sort((a, b) => {
+    const aSolved = a.result === 'CORRECT';
+    const bSolved = b.result === 'CORRECT';
+    if (aSolved && !bSolved) return -1;
+    if (!aSolved && bSolved) return 1;
+    return a.elapsedSeconds - b.elapsedSeconds;
+  });
 
   return (
     <div className="w-full space-y-6 animate-fade-in">
-
-
 
       {/* Leaderboard Table (Desktop & Tablet >=640px) */}
       <div className="hidden sm:block overflow-x-auto rounded-2xl border border-[#3E4550] bg-[#292D3A]/90 backdrop-blur-xl">
@@ -35,8 +37,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ sessionHistory }) => {
                 <th className="p-3.5">Status</th>
                 <th className="p-3.5">Team Name</th>
                 <th className="p-3.5">Player(s)</th>
-                <th className="p-3.5">Solve Time</th>
-                <th className="p-3.5">Points</th>
+                <th className="p-3.5">Timing</th>
                 <th className="p-3.5">Recorded At</th>
               </tr>
             </thead>
@@ -55,8 +56,8 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ sessionHistory }) => {
                         <CheckCircle2 className="w-3.5 h-3.5" /> Solved
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-red-400 bg-red-500/10 px-2 py-0.5 rounded-md border border-red-500/20 text-[11px]">
-                        <TimerOff className="w-3.5 h-3.5" /> Timeout
+                      <span className="inline-flex items-center gap-1 text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20 text-[11px]">
+                        <Flag className="w-3.5 h-3.5" /> Gave Up
                       </span>
                     )}
                   </td>
@@ -70,11 +71,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ sessionHistory }) => {
                       {item.playerName}
                     </span>
                   </td>
-                  <td className="p-3.5 font-semibold text-[#D4D8DB]">{item.elapsedSeconds}s</td>
-                  <td className="p-3.5 font-black text-[#00E0AF] text-sm">
+                  <td className="p-3.5 font-extrabold text-[#00E0AF] text-sm">
                     <span className="inline-flex items-center gap-1">
-                      <Zap className="w-3.5 h-3.5 text-[#00E0AF]" />
-                      {item.score} PTS
+                      <Clock className="w-3.5 h-3.5 text-[#05CC93]" />
+                      {item.elapsedSeconds}s
                     </span>
                   </td>
                   <td className="p-3.5 text-[#7D8A92] text-[11px]">
@@ -104,15 +104,18 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ sessionHistory }) => {
                   </span>
                   {item.result === 'CORRECT' ? (
                     <span className="text-[10px] font-bold text-[#00E0AF] bg-[#01A982]/15 px-2 py-0.5 rounded-md border border-[#01A982]/30">
-                      ✓ Solved ({item.elapsedSeconds}s)
+                      ✓ Solved
                     </span>
                   ) : (
-                    <span className="text-[10px] font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded-md border border-red-500/20">
-                      ✕ Timeout
+                    <span className="text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20">
+                      ✕ Gave Up
                     </span>
                   )}
                 </div>
-                <span className="text-sm font-black text-[#00E0AF]">{item.score} PTS</span>
+                <span className="text-sm font-black text-[#00E0AF] flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-[#05CC93]" />
+                  {item.elapsedSeconds}s
+                </span>
               </div>
 
               <div className="flex items-center justify-between text-xs pt-1 border-t border-[#3E4550]/80">

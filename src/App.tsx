@@ -65,10 +65,10 @@ export const App: React.FC = () => {
     }
 
     const savedRound = loadActiveRound();
-    if (savedRound && savedRound.config && savedRound.isTimerRunning && savedRound.remainingSeconds > 0) {
+    if (savedRound && savedRound.config && savedRound.isTimerRunning) {
       setRoundConfig(savedRound.config);
-      setRemainingSeconds(savedRound.remainingSeconds);
-      setElapsedSeconds(savedRound.elapsedSeconds);
+      setRemainingSeconds(savedRound.remainingSeconds ?? 0);
+      setElapsedSeconds(savedRound.elapsedSeconds ?? 0);
       setEvents(savedRound.events);
       setGameState('PLAYING');
       setIsTimerRunning(true);
@@ -92,44 +92,10 @@ export const App: React.FC = () => {
     }
   }, [gameState, roundConfig, remainingSeconds, elapsedSeconds, events, isTimerRunning]);
 
-  // Main 60-second Timer Loop
+  // Main Stopwatch Timer Loop (indefinite, increments elapsedSeconds)
   useEffect(() => {
     if (gameState === 'PLAYING' && isTimerRunning) {
       timerIntervalRef.current = window.setInterval(() => {
-        setRemainingSeconds((prevRemaining) => {
-          if (prevRemaining <= 1) {
-            // Timer Reached 0! Trigger Timeout
-            clearInterval(timerIntervalRef.current!);
-            setIsTimerRunning(false);
-            setGameState('TIMEOUT');
-            soundFx.playTimeout();
-            
-            // Log to Session History
-            const timeoutRecord: SessionRecord = {
-              id: Date.now().toString(),
-              teamName: roundConfig.teamName,
-              playerName: roundConfig.playerName,
-              players: roundConfig.players,
-              result: 'TIMEOUT',
-              elapsedSeconds: roundConfig.durationSeconds,
-              attempts: events.length,
-              score: 0,
-              timestamp: new Date().toISOString(),
-            };
-            const updatedHistory = saveSessionRecord(timeoutRecord);
-            setSessionHistory(updatedHistory);
-
-            return 0;
-          }
-
-          // Subtle alert sound during final 5 seconds
-          if (prevRemaining <= 6) {
-            soundFx.playTick(900);
-          }
-
-          return prevRemaining - 1;
-        });
-
         setElapsedSeconds((prevElapsed) => prevElapsed + 1);
       }, 1000);
     } else {
@@ -143,7 +109,7 @@ export const App: React.FC = () => {
         clearInterval(timerIntervalRef.current);
       }
     };
-  }, [gameState, isTimerRunning, roundConfig, events.length]);
+  }, [gameState, isTimerRunning]);
 
   // Start Round Action (from Setup)
   const handleStartRound = (teamName: string, playerName: string, players?: string[]) => {
@@ -152,9 +118,9 @@ export const App: React.FC = () => {
       teamName,
       playerName,
       players: playerList,
-      durationSeconds: 60,
+      durationSeconds: 0,
     });
-    setRemainingSeconds(60);
+    setRemainingSeconds(0);
     setElapsedSeconds(0);
     setEvents([]);
     setGameState('READY');
@@ -166,19 +132,43 @@ export const App: React.FC = () => {
     setIsTimerRunning(true);
   };
 
-  // Handle WRONG Answer Click
-  const handleWrongAnswer = () => {
+  // Handle GAVE UP Button Click
+  const handleGaveUp = () => {
     if (gameState !== 'PLAYING') return;
 
-    const newEvent: TimelineEvent = {
-      id: `${Date.now()}_${Math.random()}`,
-      type: 'WRONG',
-      remainingSeconds,
+    // Stop timer immediately
+    setIsTimerRunning(false);
+    soundFx.playTimeout();
+
+    const finalEvents: TimelineEvent[] = [
+      ...events,
+      {
+        id: `${Date.now()}_${Math.random()}`,
+        type: 'GAVE_UP',
+        remainingSeconds: 0,
+        elapsedSeconds,
+        timestamp: Date.now(),
+      },
+    ];
+
+    setEvents(finalEvents);
+    setGameState('TIMEOUT');
+
+    // Save record to Session History with GAVE_UP result
+    const record: SessionRecord = {
+      id: Date.now().toString(),
+      teamName: roundConfig.teamName,
+      playerName: roundConfig.playerName,
+      players: roundConfig.players,
+      result: 'GAVE_UP',
       elapsedSeconds,
-      timestamp: Date.now(),
+      attempts: finalEvents.length,
+      score: 0,
+      timestamp: new Date().toISOString(),
     };
 
-    setEvents((prev) => [...prev, newEvent]);
+    const updatedHistory = saveSessionRecord(record);
+    setSessionHistory(updatedHistory);
   };
 
   // Handle CORRECT Answer Click
@@ -193,7 +183,7 @@ export const App: React.FC = () => {
       {
         id: `${Date.now()}_${Math.random()}`,
         type: 'CORRECT',
-        remainingSeconds,
+        remainingSeconds: 0,
         elapsedSeconds,
         timestamp: Date.now(),
       },
@@ -202,9 +192,7 @@ export const App: React.FC = () => {
     setEvents(finalEvents);
     setGameState('CORRECT');
 
-    const score = Math.max(100, 1000 - elapsedSeconds * 10);
-
-    // Save record to Session History
+    // Save record to Session History (points removed, score: 0)
     const record: SessionRecord = {
       id: Date.now().toString(),
       teamName: roundConfig.teamName,
@@ -213,7 +201,7 @@ export const App: React.FC = () => {
       result: 'CORRECT',
       elapsedSeconds,
       attempts: finalEvents.length,
-      score,
+      score: 0,
       timestamp: new Date().toISOString(),
     };
 
@@ -223,14 +211,14 @@ export const App: React.FC = () => {
 
   // Action: NEXT ROUND (Resets timer & events, goes back to SETUP for next user/team)
   const handleNextRound = () => {
-    setRemainingSeconds(60);
+    setRemainingSeconds(0);
     setElapsedSeconds(0);
     setEvents([]);
     setRoundConfig({
       teamName: '',
       playerName: '',
       players: [],
-      durationSeconds: 60,
+      durationSeconds: 0,
     });
     setSetupKey((k) => k + 1);
     setGameState('SETUP');
@@ -239,7 +227,7 @@ export const App: React.FC = () => {
 
   // Action: TRY AGAIN (Retries same round with same team and player)
   const handleTryAgain = () => {
-    setRemainingSeconds(60);
+    setRemainingSeconds(0);
     setElapsedSeconds(0);
     setEvents([]);
     setGameState('READY');
@@ -247,7 +235,7 @@ export const App: React.FC = () => {
 
   // Action: BACK TO SETUP / RESET
   const handleBackToSetup = () => {
-    setRemainingSeconds(60);
+    setRemainingSeconds(0);
     setElapsedSeconds(0);
     setEvents([]);
     setIsTimerRunning(false);
@@ -255,7 +243,7 @@ export const App: React.FC = () => {
       teamName: '',
       playerName: '',
       players: [],
-      durationSeconds: 60,
+      durationSeconds: 0,
     });
     setSetupKey((k) => k + 1);
     setGameState('SETUP');
@@ -328,11 +316,9 @@ export const App: React.FC = () => {
         {gameState === 'PLAYING' && (
           <GameRound
             config={roundConfig}
-            remainingSeconds={remainingSeconds}
             elapsedSeconds={elapsedSeconds}
-            events={events}
             onCorrect={handleCorrectAnswer}
-            onWrong={handleWrongAnswer}
+            onGaveUp={handleGaveUp}
           />
         )}
 
@@ -350,6 +336,7 @@ export const App: React.FC = () => {
           <TimeoutResult
             config={roundConfig}
             events={events}
+            elapsedSeconds={elapsedSeconds}
             onTryAgain={handleTryAgain}
             onNextRound={handleNextRound}
             onBackToSetup={handleBackToSetup}

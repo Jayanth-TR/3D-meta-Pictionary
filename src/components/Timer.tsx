@@ -1,77 +1,45 @@
 import React from 'react';
+import { Clock } from 'lucide-react';
 
 interface TimerProps {
-  remainingSeconds: number;
-  totalSeconds?: number;
+  elapsedSeconds: number;
 }
 
-export const Timer: React.FC<TimerProps> = ({
-  remainingSeconds,
-  totalSeconds = 60,
-}) => {
-  // Ensure value stays between 0 and totalSeconds
-  const clampedSeconds = Math.max(0, Math.min(totalSeconds, remainingSeconds));
-  const progressRatio = clampedSeconds / totalSeconds;
-  
+export const Timer: React.FC<TimerProps> = ({ elapsedSeconds }) => {
+  const minutes = Math.floor(elapsedSeconds / 60);
+  const seconds = elapsedSeconds % 60;
+  const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
   // SVG Ring Math with 300x300 viewBox
   const radius = 125;
-  const strokeWidth = 14;
+  const strokeWidth = 12;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference * (1 - progressRatio);
-
-  // Dynamic Theme state based on timer range:
-  let stateTheme = {
-    ringColor: 'stroke-[#01A982]',
-    textColor: 'text-[#00E0AF]',
-    glowColor: 'shadow-[#01A982]/30',
-    bgGradient: 'from-[#292D3A] via-[#151821] to-[#292D3A]',
-    badgeText: '60s ROUND TIMER',
-    badgeBg: 'bg-[#01A982]/20 text-[#00E0AF] border-[#01A982]/40',
-    isUrgent: false,
-  };
-
-  if (clampedSeconds <= 10) {
-    stateTheme = {
-      ringColor: 'stroke-red-500',
-      textColor: 'text-red-400',
-      glowColor: 'shadow-red-500/60',
-      bgGradient: 'from-red-950/60 via-[#151821] to-red-950/40',
-      badgeText: 'URGENT - TIME RUNNING OUT!',
-      badgeBg: 'bg-red-500/30 text-red-200 border-red-500/50 animate-pulse',
-      isUrgent: true,
-    };
-  } else if (clampedSeconds <= 20) {
-    stateTheme = {
-      ringColor: 'stroke-amber-400',
-      textColor: 'text-amber-300',
-      glowColor: 'shadow-amber-500/40',
-      bgGradient: 'from-amber-950/40 via-[#151821] to-[#292D3A]',
-      badgeText: 'FINAL 20 SECONDS',
-      badgeBg: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-      isUrgent: false,
-    };
-  }
+  // Progress animates smoothly every minute cycle (0-60s)
+  const minuteProgress = (seconds / 60);
+  const strokeDashoffset = circumference * (1 - (minuteProgress === 0 && elapsedSeconds > 0 ? 1 : minuteProgress));
 
   return (
     <div className="flex-shrink-0 flex flex-col items-center justify-center my-0.5 sm:my-1 select-none">
       
       {/* State Badge */}
-      <div className={`px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest border mb-1 transition-all ${stateTheme.badgeBg}`}>
-        {stateTheme.badgeText}
+      <div className="px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest border mb-1.5 transition-all bg-[#01A982]/20 text-[#00E0AF] border-[#01A982]/40 shadow-sm flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#00E0AF] animate-ping" />
+        <Clock className="w-3 h-3 text-[#00E0AF]" />
+        <span>LIVE STOPWATCH • UNLIMITED TIME</span>
       </div>
 
-      {/* SVG Ring & Countdown Container - scaled proportionally for 100vh fit */}
-      <div className={`relative flex items-center justify-center w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 lg:w-48 lg:h-48 rounded-full bg-gradient-to-b ${stateTheme.bgGradient} border border-[#3E4550] shadow-xl ${stateTheme.glowColor} ${stateTheme.isUrgent ? 'animate-pulse-glow' : ''}`}>
+      {/* SVG Ring & Stopwatch Container */}
+      <div className="relative flex items-center justify-center w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-52 lg:h-52 rounded-full bg-gradient-to-b from-[#292D3A] via-[#151821] to-[#292D3A] border-2 border-[#3E4550] shadow-2xl shadow-[#01A982]/25">
         
-        {/* SVG Circular Ring with viewBox */}
-        <svg viewBox="0 0 300 300" className="w-full h-full transform -rotate-90 p-1.5 sm:p-2.5">
+        {/* SVG Circular Ring */}
+        <svg viewBox="0 0 300 300" className="w-full h-full transform -rotate-90 p-2 sm:p-3">
           {/* Background Track */}
           <circle
             cx="150"
             cy="150"
             r={radius}
             strokeWidth={strokeWidth}
-            className="stroke-[#3E4550] fill-none"
+            className="stroke-[#3E4550]/60 fill-none"
           />
           {/* Animated Progress Indicator */}
           <circle
@@ -82,17 +50,17 @@ export const Timer: React.FC<TimerProps> = ({
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
             strokeLinecap="round"
-            className={`fill-none transition-all duration-1000 ease-linear ${stateTheme.ringColor}`}
+            className="fill-none stroke-[#01A982] transition-all duration-1000 ease-linear shadow-[0_0_12px_#01A982]"
           />
         </svg>
 
         {/* Inner Text Block */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <span className={`font-black tracking-tighter text-3xl sm:text-5xl md:text-6xl lg:text-7xl transition-all leading-none ${stateTheme.textColor} ${stateTheme.isUrgent ? 'animate-timer-pulse' : ''}`}>
-            {clampedSeconds}
+          <span className="font-mono font-black tracking-tighter text-3xl sm:text-5xl md:text-6xl lg:text-7xl transition-all leading-none text-white drop-shadow-md">
+            {formattedTime}
           </span>
-          <span className="text-[8px] sm:text-[10px] md:text-xs font-extrabold uppercase tracking-widest text-[#B1B9BE] mt-0.5">
-            SECONDS
+          <span className="text-[9px] sm:text-[11px] md:text-xs font-black uppercase tracking-widest text-[#00E0AF] mt-1">
+            {elapsedSeconds}s ELAPSED
           </span>
         </div>
 

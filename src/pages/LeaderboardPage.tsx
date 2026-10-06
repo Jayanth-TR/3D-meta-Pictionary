@@ -190,7 +190,7 @@ export const LeaderboardPage: React.FC = () => {
           onClearHistory={handleClearHistory}
           showTitle={true}
           title="Event Session Leaderboard"
-          subtitle={`Live rankings of top teams and players by points and speed · ${sessionHistory.length} record${sessionHistory.length !== 1 ? 's' : ''}`}
+          subtitle={`Live rankings of teams and players by fastest solve time · ${sessionHistory.length} record${sessionHistory.length !== 1 ? 's' : ''}`}
         />
       </main>
 

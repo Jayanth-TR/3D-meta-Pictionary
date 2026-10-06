@@ -104,13 +104,13 @@ export const InstructionsModal: React.FC<InstructionsModalProps> = ({
                   </span>
                   <Clock className="w-4 h-4 text-[#00E0AF]" />
                 </div>
-                <h3 className="text-xs sm:text-sm font-bold text-white">60-Second Clock</h3>
+                <h3 className="text-xs sm:text-sm font-bold text-white">Live Stopwatch</h3>
                 <p className="text-[11px] text-[#B1B9BE] leading-relaxed">
-                  3-2-1 countdown begins. 60s timer starts! Draw in 3D air immediately.
+                  3-2-1 countdown begins. Stopwatch counts up! Take as much time as needed.
                 </p>
               </div>
               <div className="text-[10px] font-bold text-[#00E0AF] bg-[#151821] px-2 py-1 rounded-lg border border-[#3E4550] truncate">
-                ⏱️ Faster solves = maximum points
+                ⏱️ No time limit — fastest solve ranks #1
               </div>
             </div>
 
@@ -125,7 +125,7 @@ export const InstructionsModal: React.FC<InstructionsModalProps> = ({
                 </div>
                 <h3 className="text-xs sm:text-sm font-bold text-white">Live Guessing</h3>
                 <p className="text-[11px] text-[#B1B9BE] leading-relaxed">
-                  Teammates watch live screen and shout guesses. Operator logs attempts.
+                  Teammates watch live screen and shout guesses. Unlimited guesses allowed.
                 </p>
               </div>
               <div className="text-[10px] font-bold text-[#62E5F6] bg-[#151821] px-2 py-1 rounded-lg border border-[#3E4550] truncate">
@@ -142,48 +142,44 @@ export const InstructionsModal: React.FC<InstructionsModalProps> = ({
                   </span>
                   <Trophy className="w-4 h-4 text-amber-400" />
                 </div>
-                <h3 className="text-xs sm:text-sm font-bold text-white">Score & Podium</h3>
+                <h3 className="text-xs sm:text-sm font-bold text-white">Correct or Give Up</h3>
                 <p className="text-[11px] text-[#B1B9BE] leading-relaxed">
-                  Correct answer locks speed score and posts to live event leaderboard.
+                  Hit CORRECT to lock your solve time, or GAVE UP if you forfeit.
                 </p>
               </div>
               <div className="text-[10px] font-bold text-amber-300 bg-[#151821] px-2 py-1 rounded-lg border border-[#3E4550] truncate">
-                🏆 Top 3 teams achieve podium status
+                🏆 Fastest solve times lead the podium
               </div>
             </div>
 
           </div>
         </div>
 
-        {/* 2. SPEED SCORING TIERS & GOLDEN RULES */}
+        {/* 2. TIMING & RANKING RULES */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3 pt-1">
           
-          {/* Speed Scoring Matrix (7 Cols) */}
+          {/* Timing & Ranking Matrix (7 Cols) */}
           <div className="md:col-span-7 bg-[#292D3A] border border-[#3E4550] rounded-2xl p-3.5 space-y-2">
             <div className="flex items-center justify-between text-white">
               <div className="flex items-center gap-1.5">
                 <Flame className="w-4 h-4 text-[#00E0AF]" />
-                <h4 className="text-xs font-bold uppercase tracking-wider">Speed Scoring Tiers</h4>
+                <h4 className="text-xs font-bold uppercase tracking-wider">Timing & Ranking</h4>
               </div>
-              <span className="text-[10px] text-[#B1B9BE]">Base: 1,000 Pts - Elapsed Time</span>
+              <span className="text-[10px] text-[#B1B9BE]">Ranked by Fastest Solve</span>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 text-center">
+            <div className="grid grid-cols-3 gap-2 text-center">
               <div className="bg-[#151821] p-2 rounded-xl border border-[#01A982]/40">
-                <span className="text-[10px] text-[#B1B9BE] block font-medium">&le; 10s Fast</span>
-                <span className="text-sm font-black text-[#00E0AF]">900–1000 pts</span>
+                <span className="text-[10px] text-[#B1B9BE] block font-medium">⚡ Lightning</span>
+                <span className="text-sm font-black text-[#00E0AF]">&lt; 30s Solve</span>
               </div>
               <div className="bg-[#151821] p-2 rounded-xl border border-[#3E4550]">
-                <span className="text-[10px] text-[#B1B9BE] block font-medium">11–30s Quick</span>
-                <span className="text-sm font-black text-[#05CC93]">700–890 pts</span>
+                <span className="text-[10px] text-[#B1B9BE] block font-medium">🎯 Solid</span>
+                <span className="text-sm font-black text-[#05CC93]">30–90s Solve</span>
               </div>
-              <div className="bg-[#151821] p-2 rounded-xl border border-[#3E4550]">
-                <span className="text-[10px] text-[#B1B9BE] block font-medium">31–59s Clutch</span>
-                <span className="text-sm font-black text-amber-300">410–690 pts</span>
-              </div>
-              <div className="bg-[#151821] p-2 rounded-xl border border-red-500/30">
-                <span className="text-[10px] text-[#B1B9BE] block font-medium">60s Expired</span>
-                <span className="text-sm font-black text-red-400">0 pts (Timeout)</span>
+              <div className="bg-[#151821] p-2 rounded-xl border border-rose-500/30">
+                <span className="text-[10px] text-[#B1B9BE] block font-medium">🏳️ Gave Up</span>
+                <span className="text-sm font-black text-rose-400">Forfeited</span>
               </div>
             </div>
           </div>

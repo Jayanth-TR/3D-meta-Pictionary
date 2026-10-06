@@ -6,7 +6,7 @@ import type { RoundConfig, TimelineEvent } from '../types/game';
 interface RoundResultProps {
   config: RoundConfig;
   elapsedSeconds: number;
-  events: TimelineEvent[];
+  events?: TimelineEvent[];
   onNextRound: () => void;
   onBackToSetup: () => void;
 }
@@ -14,14 +14,9 @@ interface RoundResultProps {
 export const RoundResult: React.FC<RoundResultProps> = ({
   config,
   elapsedSeconds,
-  events,
   onNextRound,
   onBackToSetup,
 }) => {
-  // Score calculation: 1000 - (elapsedSeconds * 10), minimum 100
-  const calculatedScore = Math.max(100, 1000 - elapsedSeconds * 10);
-  const totalAttempts = events.length;
-  const wrongAnswersCount = events.filter((e) => e.type === 'WRONG').length;
 
   useEffect(() => {
     // Launch celebratory confetti burst using HPE Green, Jade, Mint & White!
@@ -81,52 +76,45 @@ export const RoundResult: React.FC<RoundResultProps> = ({
           </p>
         </div>
 
-        {/* Big Prominent Score Box */}
-        <div className="bg-gradient-to-r from-[#01A982]/20 via-[#151821] to-[#01A982]/20 border-2 border-[#01A982]/60 rounded-2xl p-2.5 sm:p-4 shadow-xl relative z-10">
-          <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#00E0AF] block mb-0.5">
-            POINTS AWARDED
+        {/* Big Prominent Solve Time Box */}
+        <div className="bg-gradient-to-r from-[#01A982]/20 via-[#151821] to-[#01A982]/20 border-2 border-[#01A982]/60 rounded-2xl p-3 sm:p-5 shadow-xl relative z-10">
+          <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#00E0AF] block mb-1">
+            SOLVE TIME RECORDED
           </span>
-          <div className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tighter drop-shadow-lg leading-none">
-            {calculatedScore} <span className="text-xl sm:text-2xl text-[#00E0AF] font-bold">PTS</span>
+          <div className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tighter drop-shadow-lg leading-none flex items-center justify-center gap-2">
+            <Clock className="w-8 h-8 sm:w-10 sm:h-10 text-[#00E0AF]" />
+            <span>{elapsedSeconds} <span className="text-2xl sm:text-3xl text-[#00E0AF] font-bold">SEC</span></span>
           </div>
-          {/* <span className="text-[10px] sm:text-xs text-[#B1B9BE] font-medium mt-1 block">
-            Formula: 1000 - ({elapsedSeconds}s × 10) [Min: 100]
-          </span> */}
+          <span className="text-[11px] sm:text-xs text-[#B1B9BE] font-medium mt-1.5 block">
+            Faster solve ranks higher on the live leaderboard!
+          </span>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 relative z-10">
           {/* Team Name */}
-          <div className="bg-[#151821] border border-[#3E4550] p-2 sm:p-2.5 rounded-xl">
+          <div className="bg-[#151821] border border-[#3E4550] p-2.5 sm:p-3 rounded-xl">
             <span className="text-[9px] font-bold text-[#7D8A92] uppercase tracking-wider block mb-0.5">Team Name</span>
             <span className="text-xs sm:text-sm font-extrabold text-[#05CC93] truncate block flex items-center justify-center gap-1">
-              <Users className="w-3 h-3 text-[#05CC93]" /> {config.teamName}
+              <Users className="w-3.5 h-3.5 text-[#05CC93]" /> {config.teamName}
             </span>
           </div>
 
           {/* Player Names */}
-          <div className="bg-[#151821] border border-[#3E4550] p-2 sm:p-2.5 rounded-xl">
+          <div className="bg-[#151821] border border-[#3E4550] p-2.5 sm:p-3 rounded-xl">
             <span className="text-[9px] font-bold text-[#7D8A92] uppercase tracking-wider block mb-0.5">
               {config.players && config.players.length > 1 ? `Players (${config.players.length})` : 'Player'}
             </span>
             <span className="text-xs sm:text-sm font-extrabold text-[#62E5F6] truncate block flex items-center justify-center gap-1" title={config.playerName}>
-              <User className="w-3 h-3 text-[#62E5F6]" /> {config.playerName}
+              <User className="w-3.5 h-3.5 text-[#62E5F6]" /> {config.playerName}
             </span>
           </div>
 
           {/* Time Solved */}
-          <div className="bg-[#151821] border border-[#3E4550] p-2 sm:p-2.5 rounded-xl">
-            <span className="text-[9px] font-bold text-[#7D8A92] uppercase tracking-wider block mb-0.5">Solved In</span>
+          <div className="bg-[#151821] border border-[#3E4550] p-2.5 sm:p-3 rounded-xl">
+            <span className="text-[9px] font-bold text-[#7D8A92] uppercase tracking-wider block mb-0.5">Status</span>
             <span className="text-xs sm:text-sm font-extrabold text-[#00E0AF] truncate block flex items-center justify-center gap-1">
-              <Clock className="w-3 h-3 text-[#00E0AF]" /> {elapsedSeconds}s
-            </span>
-          </div>
-
-          {/* Attempts */}
-          <div className="bg-[#151821] border border-[#3E4550] p-2 sm:p-2.5 rounded-xl">
-            <span className="text-[9px] font-bold text-[#7D8A92] uppercase tracking-wider block mb-0.5">Attempts / Wrongs</span>
-            <span className="text-xs sm:text-sm font-extrabold text-[#D4D8DB] truncate block">
-              {totalAttempts} ({wrongAnswersCount} wrong)
+              ✓ Solved ({elapsedSeconds}s)
             </span>
           </div>
         </div>
