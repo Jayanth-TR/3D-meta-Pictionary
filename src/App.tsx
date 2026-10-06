@@ -284,7 +284,6 @@ export const App: React.FC = () => {
         playerName={roundConfig.playerName}
         isMuted={isMuted}
         onToggleMute={handleToggleMute}
-        onOpenSessionSummary={() => setIsSessionDrawerOpen(true)}
         onResetToSetup={() => {
           handleBackToSetup();
           setActiveSetupTab('HOW_TO_PLAY');
@@ -293,8 +292,8 @@ export const App: React.FC = () => {
         isHowToPlayActive={isInstructionsModalOpen}
       />
 
-      {/* Main View Router based on GameState - strictly 100vh */}
-      <main className="flex-1 min-h-0 overflow-hidden flex flex-col justify-center">
+      {/* Main View Router based on GameState */}
+      <main className="flex-1 min-h-0 overflow-y-auto flex flex-col justify-center">
         {gameState === 'SETUP' && activeSetupTab === 'HOW_TO_PLAY' && (
           <HowToPlay
             onStartSetup={() => setActiveSetupTab('SETUP')}

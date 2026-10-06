@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Volume2, VolumeX, Trophy, HelpCircle } from 'lucide-react';
 import type { GameState } from '../types/game';
 
@@ -8,7 +9,6 @@ interface HeaderProps {
   playerName?: string;
   isMuted: boolean;
   onToggleMute: () => void;
-  onOpenSessionSummary: () => void;
   onResetToSetup: () => void;
   onOpenHowToPlay?: () => void;
   isHowToPlayActive?: boolean;
@@ -20,7 +20,6 @@ export const Header: React.FC<HeaderProps> = ({
   playerName,
   isMuted,
   onToggleMute,
-  onOpenSessionSummary,
   onResetToSetup,
   onOpenHowToPlay,
   isHowToPlayActive,
@@ -115,15 +114,14 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden md:inline">{isMuted ? 'Muted' : 'Sound ON'}</span>
           </button>
 
-          {/* Session History Drawer / Leaderboard Button */}
-          <button
-            type="button"
-            onClick={onOpenSessionSummary}
-            className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-[#01A982] to-[#05CC93] hover:brightness-110 text-white font-bold text-xs shadow-lg shadow-[#01A982]/25 transition-all cursor-pointer active:scale-95"
+          {/* Leaderboard Page Link */}
+          <Link
+            to="/leaderboard"
+            className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-[#01A982] to-[#05CC93] hover:brightness-110 text-white font-bold text-xs shadow-lg shadow-[#01A982]/25 transition-all active:scale-95"
           >
             <Trophy className="w-4 h-4 text-[#151821] fill-[#151821]" />
             <span>Leaderboard</span>
-          </button>
+          </Link>
         </div>
 
       </div>

@@ -61,10 +61,10 @@ export const RoundResult: React.FC<RoundResultProps> = ({
 
   return (
     <div className="w-full h-full max-h-full flex items-center justify-center p-2 sm:p-4 overflow-hidden animate-fade-in">
-      
+
       {/* Container Card */}
       <div className="w-full max-w-2xl bg-[#292D3A]/95 backdrop-blur-2xl border border-[#01A982]/50 rounded-3xl p-3.5 sm:p-5 md:p-6 shadow-2xl shadow-[#01A982]/20 space-y-2.5 sm:space-y-3.5 text-center relative overflow-hidden">
-        
+
         {/* Decorative Top Glow */}
         <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-[#01A982]/25 blur-3xl rounded-full pointer-events-none"></div>
 
@@ -89,9 +89,9 @@ export const RoundResult: React.FC<RoundResultProps> = ({
           <div className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tighter drop-shadow-lg leading-none">
             {calculatedScore} <span className="text-xl sm:text-2xl text-[#00E0AF] font-bold">PTS</span>
           </div>
-          <span className="text-[10px] sm:text-xs text-[#B1B9BE] font-medium mt-1 block">
+          {/* <span className="text-[10px] sm:text-xs text-[#B1B9BE] font-medium mt-1 block">
             Formula: 1000 - ({elapsedSeconds}s × 10) [Min: 100]
-          </span>
+          </span> */}
         </div>
 
         {/* Stats Grid */}
