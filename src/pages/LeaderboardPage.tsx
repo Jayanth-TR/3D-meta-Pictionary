@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Trophy, ArrowLeft, Cloud, RotateCcw, Trash2, AlertTriangle, FileSpreadsheet, FileJson } from 'lucide-react';
 import { Leaderboard } from '../components/Leaderboard';
 import { getSessionHistory, syncSessionHistory, clearSessionHistory, isSupabaseConfigured } from '../utils/storage';
+import { supabase } from '../lib/supabase';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import { exportToExcel, exportToJson } from '../utils/exportData';
 import type { SessionRecord } from '../types/game';
 
@@ -13,32 +15,58 @@ export const LeaderboardPage: React.FC = () => {
 
   useEffect(() => {
     document.title = 'Leaderboard — HPE Beyond The Goal';
+    let isMounted = true;
 
-    const loadData = () => {
+    const loadData = async () => {
       if (isSupabaseConfigured) {
         setIsSyncing(true);
-        syncSessionHistory()
-          .then((synced) => {
-            if (synced && synced.length > 0) {
-              setSessionHistory(synced);
-            }
-          })
-          .catch((e) => {
-            console.warn('LeaderboardPage: Supabase sync error:', e);
-          })
-          .finally(() => setIsSyncing(false));
+        try {
+          const synced = await syncSessionHistory();
+          if (isMounted) {
+            setSessionHistory(synced);
+          }
+        } catch (e) {
+          console.warn('LeaderboardPage: Supabase sync error:', e);
+        } finally {
+          if (isMounted) {
+            setIsSyncing(false);
+          }
+        }
       }
     };
 
+    // Initial load
     loadData();
 
-    // Auto-refresh every 5 seconds so live game sessions on tablets/phones appear immediately
-    const interval = setInterval(loadData, 5000);
-    return () => clearInterval(interval);
+    // 1. Supabase Realtime WebSocket subscription for instant updates across devices
+    let channel: RealtimeChannel | null = null;
+    if (supabase) {
+      channel = supabase
+        .channel('realtime_leaderboard_page')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'session_records' },
+          () => {
+            loadData();
+          }
+        )
+        .subscribe();
+    }
+
+    // 2. High-frequency 3-second polling fallback so all devices stay in sync
+    const interval = setInterval(loadData, 3000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+      if (channel && supabase) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, []);
 
-  const handleClearHistory = () => {
-    clearSessionHistory();
+  const handleClearHistory = async () => {
+    await clearSessionHistory();
     setSessionHistory([]);
     setIsConfirmingReset(false);
   };

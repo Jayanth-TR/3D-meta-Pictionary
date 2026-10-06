@@ -74,7 +74,7 @@ export const getSessionHistory = (): SessionRecord[] => {
 
 /**
  * Sync session history from Supabase with local storage fallback.
- * Fetches latest records from Supabase and reconciles with local storage.
+ * Supabase is the single source of truth across all devices.
  */
 export const syncSessionHistory = async (): Promise<SessionRecord[]> => {
   const localHistory = getSessionHistory();
@@ -85,34 +85,17 @@ export const syncSessionHistory = async (): Promise<SessionRecord[]> => {
 
   try {
     const remoteRecords = await fetchRemoteSessions();
-    if (!remoteRecords) {
-      return localHistory;
-    }
-
-    // Merge remote and local (avoiding duplicates)
-    const map = new Map<string, SessionRecord>();
-    // First populate remote records
-    remoteRecords.forEach((item) => map.set(item.id, item));
-    // If any local record wasn't synced yet, retain and sync it
-    for (const localItem of localHistory) {
-      if (!map.has(localItem.id)) {
-        map.set(localItem.id, localItem);
-        // Sync missing local record to Supabase
-        insertRemoteSession(localItem).catch(() => {});
+    if (remoteRecords !== null) {
+      // Remote Supabase database is authoritative
+      try {
+        localStorage.setItem(SESSION_HISTORY_KEY, JSON.stringify(remoteRecords));
+      } catch (e) {
+        console.warn('Failed to update local storage cache:', e);
       }
+      return remoteRecords;
     }
 
-    const merged = Array.from(map.values()).sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
-
-    try {
-      localStorage.setItem(SESSION_HISTORY_KEY, JSON.stringify(merged));
-    } catch (e) {
-      console.warn('Failed to persist merged history locally', e);
-    }
-
-    return merged;
+    return localHistory;
   } catch (e) {
     console.warn('Error during Supabase session sync:', e);
     return localHistory;
@@ -122,7 +105,7 @@ export const syncSessionHistory = async (): Promise<SessionRecord[]> => {
 /**
  * Clear session history in both localStorage and Supabase.
  */
-export const clearSessionHistory = (): void => {
+export const clearSessionHistory = async (): Promise<void> => {
   try {
     localStorage.removeItem(SESSION_HISTORY_KEY);
   } catch (e) {
@@ -130,8 +113,10 @@ export const clearSessionHistory = (): void => {
   }
 
   if (isSupabaseConfigured) {
-    clearRemoteSessions().catch((err) => {
+    try {
+      await clearRemoteSessions();
+    } catch (err) {
       console.warn('Background Supabase clear failed:', err);
-    });
+    }
   }
 };

@@ -56,7 +56,7 @@ export const App: React.FC = () => {
     // 2. Sync with Supabase cloud database
     if (isSupabaseConfigured) {
       syncSessionHistory().then((synced) => {
-        if (synced && synced.length > 0) {
+        if (synced) {
           setSessionHistory(synced);
         }
       }).catch((e) => {
@@ -269,8 +269,8 @@ export const App: React.FC = () => {
   };
 
   // Clear Leaderboard
-  const handleClearHistory = () => {
-    clearSessionHistory();
+  const handleClearHistory = async () => {
+    await clearSessionHistory();
     setSessionHistory([]);
   };
 
