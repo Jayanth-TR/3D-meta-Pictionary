@@ -27,16 +27,16 @@ export const TimeoutResult: React.FC<TimeoutResultProps> = ({
         {/* Decorative Top Glow */}
         <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-rose-500/20 blur-3xl rounded-full pointer-events-none"></div>
 
-        {/* Gave Up Icon & Header */}
+        {/* Gave Up / Time's Up Icon & Header */}
         <div className="space-y-1 relative z-10">
           <div className="inline-flex p-2.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 shadow-lg mb-0.5">
-            <Flag className="w-6 h-6 sm:w-8 sm:h-8" />
+            {elapsedSeconds >= 120 ? <Clock className="w-6 h-6 sm:w-8 sm:h-8" /> : <Flag className="w-6 h-6 sm:w-8 sm:h-8" />}
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white uppercase">
-            🏳️ GAVE UP
+            {elapsedSeconds >= 120 ? "⏰ TIME'S UP!" : '🏳️ GAVE UP'}
           </h2>
           <p className="text-rose-400 font-extrabold text-xs sm:text-sm tracking-wider uppercase">
-            Round Forfeited • Ready for the Next Challenge!
+            {elapsedSeconds >= 120 ? '2 Minutes Expired • Ready for the Next Challenge!' : 'Round Forfeited • Ready for the Next Challenge!'}
           </p>
         </div>
 
@@ -70,7 +70,7 @@ export const TimeoutResult: React.FC<TimeoutResultProps> = ({
             <div className="bg-[#292D3A]/60 p-2 rounded-xl border border-[#3E4550]/60">
               <span className="text-[9px] font-bold text-[#7D8A92] uppercase tracking-wider block mb-0.5">Result</span>
               <span className="text-xs sm:text-sm font-black text-rose-400">
-                Gave Up
+                {elapsedSeconds >= 120 ? 'Timed Out (2:00)' : 'Gave Up'}
               </span>
             </div>
           </div>

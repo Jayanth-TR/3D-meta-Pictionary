@@ -104,13 +104,13 @@ export const InstructionsModal: React.FC<InstructionsModalProps> = ({
                   </span>
                   <Clock className="w-4 h-4 text-[#00E0AF]" />
                 </div>
-                <h3 className="text-xs sm:text-sm font-bold text-white">Live Stopwatch</h3>
+                <h3 className="text-xs sm:text-sm font-bold text-white">2-Minute Timer</h3>
                 <p className="text-[11px] text-[#B1B9BE] leading-relaxed">
-                  3-2-1 countdown begins. Stopwatch counts up! Take as much time as needed.
+                  3-2-1 countdown begins. You have 2 minutes (120s) to sketch and solve the prompt!
                 </p>
               </div>
               <div className="text-[10px] font-bold text-[#00E0AF] bg-[#151821] px-2 py-1 rounded-lg border border-[#3E4550] truncate">
-                ⏱️ No time limit — fastest solve ranks #1
+                ⏱️ 2-minute limit — fastest solve ranks #1
               </div>
             </div>
 

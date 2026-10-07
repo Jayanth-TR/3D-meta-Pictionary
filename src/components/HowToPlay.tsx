@@ -46,14 +46,14 @@ export const HowToPlay: React.FC<HowToPlayProps> = ({
               Solve Fast For Your Team
             </h1>
             <p className="text-xs sm:text-sm text-[#D4D8DB] font-medium leading-relaxed">
-              Together, We Move Forward. Put on the VR headset, sketch the secret prompt in full 3D space with unlimited time, and lead the live event leaderboard with the fastest solve time!
+              Together, We Move Forward. Put on the VR headset, sketch the secret prompt in full 3D space within the 2-minute timer, and lead the live event leaderboard with the fastest solve time!
             </p>
 
             {/* Quick Spec Chips */}
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#151821] border border-[#3E4550] text-xs font-semibold text-[#E6E8E9]">
                 <Clock className="w-3.5 h-3.5 text-[#00E0AF]" />
-                <span>Live Stopwatch</span>
+                <span>2-Minute Timer</span>
               </div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#151821] border border-[#3E4550] text-xs font-semibold text-[#62E5F6]">
                 <Headphones className="w-3.5 h-3.5 text-[#62E5F6]" />

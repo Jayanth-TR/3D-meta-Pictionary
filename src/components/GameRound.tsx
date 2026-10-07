@@ -6,6 +6,7 @@ import { Users, User, Clock, Sparkles } from 'lucide-react';
 
 interface GameRoundProps {
   config: RoundConfig;
+  remainingSeconds: number;
   elapsedSeconds: number;
   onCorrect: () => void;
   onGaveUp: () => void;
@@ -13,6 +14,7 @@ interface GameRoundProps {
 
 export const GameRound: React.FC<GameRoundProps> = ({
   config,
+  remainingSeconds,
   elapsedSeconds,
   onCorrect,
   onGaveUp,
@@ -71,15 +73,15 @@ export const GameRound: React.FC<GameRoundProps> = ({
 
       </div>
 
-      {/* Main Live Stopwatch Display */}
+      {/* Main Live 2-Minute Timer Display */}
       <div className="flex-1 flex flex-col items-center justify-center min-h-0">
-        <Timer elapsedSeconds={elapsedSeconds} />
+        <Timer remainingSeconds={remainingSeconds} elapsedSeconds={elapsedSeconds} totalSeconds={120} />
         
         {/* Live Tips Banner */}
         <div className="mt-3 sm:mt-4 text-center">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#151821]/80 border border-[#3E4550] text-[#B1B9BE] text-xs font-semibold shadow-inner">
             <Sparkles className="w-3.5 h-3.5 text-[#00E0AF]" />
-            <span>Faster solves earn a top rank on the leaderboard • Take all the time you need!</span>
+            <span>Faster solves earn a top rank on the leaderboard • 2 minutes to solve!</span>
           </div>
         </div>
       </div>

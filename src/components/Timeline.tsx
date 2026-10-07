@@ -11,7 +11,7 @@ interface TimelineProps {
 export const Timeline: React.FC<TimelineProps> = ({
   events,
   currentElapsedSeconds,
-  totalSeconds = 60,
+  totalSeconds = 120,
 }) => {
   const [activeHoverEvent, setActiveHoverEvent] = useState<TimelineEvent | null>(null);
 
@@ -26,7 +26,7 @@ export const Timeline: React.FC<TimelineProps> = ({
         <div className="flex items-center gap-1.5">
           <Clock className="w-3.5 h-3.5 text-[#01A982]" />
           <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-            60s Timeline
+            2m Timeline
           </h3>
         </div>
 
@@ -47,8 +47,8 @@ export const Timeline: React.FC<TimelineProps> = ({
         
         {/* Top Seconds Indicators */}
         <div className="flex justify-between text-[9px] font-extrabold text-[#7D8A92] uppercase tracking-wider mb-1">
-          <span>START (60s)</span>
-          <span>30s</span>
+          <span>START (120s)</span>
+          <span>60s</span>
           <span>END (0s)</span>
         </div>
 
